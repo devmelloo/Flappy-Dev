@@ -29,6 +29,9 @@ fonteMenu = pygame.font.SysFont("comicsans", 25)
 programador = pygame.image.load("bases/dev.png")
 programador = pygame.transform.scale(programador, (80, 80))
 
+decorativo = pygame.image.load("bases/bug.png")
+decorativo = pygame.transform.scale(decorativo, (50, 50))
+
 fundo = pygame.image.load("bases/fundo.png")
 fundo = pygame.transform.scale(fundo, (1000, 700))
 
@@ -90,6 +93,13 @@ def jogar():
     larguraProgramador = 80
     alturaProgramador = 80
 
+    posicaoXDecorativo = random.randint(100, 900)
+    posicaoYDecorativo = random.randint(50, 600)
+
+    movimentoXDecorativo = random.randint(-3, 3)
+    movimentoYDecorativo = random.randint(-3, 3)
+
+
     movimentoYProgramador = 0
     gravidade = 1
 
@@ -102,6 +112,7 @@ def jogar():
 
     pontos = 0
     passou = False
+    pausado = False
 
     while True:
         for evento in pygame.event.get():
@@ -110,6 +121,35 @@ def jogar():
 
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
                 movimentoYProgramador = -13
+
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+                pausado = not pausado
+
+        posicaoXDecorativo = posicaoXDecorativo + movimentoXDecorativo
+        posicaoYDecorativo = posicaoYDecorativo + movimentoYDecorativo
+
+        if posicaoXDecorativo <= 0:
+            movimentoXDecorativo = random.randint(1, 4)
+
+        elif posicaoXDecorativo >= 950:
+            movimentoXDecorativo = random.randint(-4, -1)
+
+        if posicaoYDecorativo <= 0:
+            movimentoYDecorativo = random.randint(1, 4)
+
+        elif posicaoYDecorativo >= 650:
+            movimentoYDecorativo = random.randint(-4, -1)
+        
+        if random.randint(1, 100) == 1:
+            movimentoXDecorativo = random.randint(-3, 3)
+            movimentoYDecorativo = random.randint(-3, 3)
+
+        if pausado == True:
+            textoPausa = fonteMenu.render("PAUSADO - Aperte SPACE para continuar", True, branco)
+            tela.blit(textoPausa, (300, 330))
+            pygame.display.update()
+            relogio.tick(60)
+            continue
 
         movimentoYProgramador = movimentoYProgramador + gravidade
         posicaoYProgramador = posicaoYProgramador + movimentoYProgramador
@@ -129,7 +169,7 @@ def jogar():
                 velocidadeErro = velocidadeErro + 1
 
         tela.blit(fundo, (0,0))
-
+        tela.blit(decorativo, (posicaoXDecorativo, posicaoYDecorativo))
         tela.blit(programador, (posicaoXProgramador, posicaoYProgramador))
 
         pygame.draw.rect(tela, verde, (posicaoXErro, 0, larguraErro, alturaErroCima))
@@ -141,8 +181,11 @@ def jogar():
         textoErroBaixo = fonteMenu.render("ERROR", True, preto)
         tela.blit(textoErroBaixo, (posicaoXErro + 5, alturaErroCima + espaco + 10))
 
-        texto = fonteMenu.render("Erros desviados: " + str(pontos), True, preto)
+        texto = fonteMenu.render("Erros desviados: " + str(pontos), True, branco)
         tela.blit(texto, (10, 10))
+
+        textoPause = fonteMenu.render("SPACE = Pause", True, branco)
+        tela.blit(textoPause, (820, 10))
 
         pixelsProgramadorX = list(range(posicaoXProgramador, posicaoXProgramador + larguraProgramador))
         pixelsProgramadorY = list(range(posicaoYProgramador, posicaoYProgramador + alturaProgramador))
