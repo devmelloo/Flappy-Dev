@@ -29,6 +29,9 @@ fonteMenu = pygame.font.SysFont("comicsans", 25)
 programador = pygame.image.load("bases/dev.png")
 programador = pygame.transform.scale(programador, (80, 80))
 
+fundo = pygame.image.load("bases/fundo.png")
+fundo = pygame.transform.scale(fundo, (1000, 700))
+
 
 def boas_vindas():
     nome_maior, maior_pontos, dataJogada = maior_pontuador()
@@ -50,7 +53,7 @@ def boas_vindas():
                 if startButton.collidepoint(evento.pos):
                     jogar()
 
-        tela.fill(azul)
+        tela.blit(fundo, (0,0))
 
         titulo = fonteMenu.render("Bem-vindo, " + nome + "!", True, preto)
         tela.blit(titulo, (370, 120))
@@ -125,7 +128,7 @@ def jogar():
             if pontos % 3 == 0:
                 velocidadeErro = velocidadeErro + 1
 
-        tela.fill(azul)
+        tela.blit(fundo, (0,0))
 
         tela.blit(programador, (posicaoXProgramador, posicaoYProgramador))
 
