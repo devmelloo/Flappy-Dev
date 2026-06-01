@@ -1,9 +1,20 @@
 import pygame
 import random
+from recursos.funcoes import inicializarBancoDeDados, escreverDados, maior_pontuador
 
 pygame.init()
+pygame.mixer.music.load("bases/soundtrack.mp3")
 
-tamanho = (800, 400)
+inicializarBancoDeDados()
+
+while True:
+    nome = input("Nickname: ")
+    if len(nome) > 0:
+        break
+    else:
+        print("Nome Inválido!")
+
+tamanho = (1000, 700)
 pygame.display.set_caption("Flappy Dev")
 relogio = pygame.time.Clock()
 tela = pygame.display.set_mode(tamanho)
@@ -12,29 +23,79 @@ branco = (255, 255, 255)
 preto = (0, 0, 0)
 verde = (0, 200, 0)
 azul = (90, 180, 255)
-vermelho = (200, 0, 0)
 
 fonteMenu = pygame.font.SysFont("comicsans", 25)
 
 programador = pygame.image.load("bases/dev.png")
-programador = pygame.transform.scale(programador, (80,80))
+programador = pygame.transform.scale(programador, (80, 80))
+
+
+def boas_vindas():
+    nome_maior, maior_pontos, dataJogada = maior_pontuador()
+
+    larguraButtonStart = 180
+    alturaButtonStart = 45
+
+    while True:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                quit()
+
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if startButton.collidepoint(evento.pos):
+                    larguraButtonStart = 165
+                    alturaButtonStart = 40
+
+            elif evento.type == pygame.MOUSEBUTTONUP:
+                if startButton.collidepoint(evento.pos):
+                    jogar()
+
+        tela.fill(azul)
+
+        titulo = fonteMenu.render("Bem-vindo, " + nome + "!", True, preto)
+        tela.blit(titulo, (370, 120))
+
+        explicacao1 = fonteMenu.render("Ajude o programador a fugir dos bugs e erros.", True, preto)
+        tela.blit(explicacao1, (260, 180))
+
+        explicacao2 = fonteMenu.render("Use a seta para cima para voar.", True, preto)
+        tela.blit(explicacao2, (330, 220))
+
+        if nome_maior == None:
+            recorde = fonteMenu.render("Melhor jogador: ainda nao existe", True, preto)
+            tela.blit(recorde, (330, 290))
+        else:
+            recorde = fonteMenu.render("Melhor jogador: " + nome_maior + " - " + str(maior_pontos), True, preto)
+            tela.blit(recorde, (310, 290))
+
+            data = fonteMenu.render("Data/Hora: " + str(dataJogada), True, preto)
+            tela.blit(data, (370, 325))
+
+        startButton = pygame.draw.rect(tela, branco, (400, 430, larguraButtonStart, alturaButtonStart), border_radius=15)
+        startTexto = fonteMenu.render("Iniciar partida", True, preto)
+        tela.blit(startTexto, (415, 435))
+
+        pygame.display.update()
+        relogio.tick(60)
 
 
 def jogar():
+    pygame.mixer.music.play(-1)
+
     posicaoXProgramador = 100
-    posicaoYProgramador = 180
+    posicaoYProgramador = 300
     larguraProgramador = 80
     alturaProgramador = 80
 
     movimentoYProgramador = 0
     gravidade = 1
 
-    posicaoXErro = 800
+    posicaoXErro = 1000
     larguraErro = 80
-    velocidadeErro = 4
+    velocidadeErro = 3
 
-    espaco = 210
-    alturaErroCima = random.randint(50, 220)
+    espaco = 240
+    alturaErroCima = random.randint(80, 320)
 
     pontos = 0
     passou = False
@@ -45,7 +106,7 @@ def jogar():
                 quit()
 
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
-                movimentoYProgramador = -10
+                movimentoYProgramador = -13
 
         movimentoYProgramador = movimentoYProgramador + gravidade
         posicaoYProgramador = posicaoYProgramador + movimentoYProgramador
@@ -53,21 +114,23 @@ def jogar():
         posicaoXErro = posicaoXErro - velocidadeErro
 
         if posicaoXErro < -larguraErro:
-            posicaoXErro = 800
-            alturaErroCima = random.randint(50, 220)
+            posicaoXErro = 1000
+            alturaErroCima = random.randint(80, 320)
             passou = False
 
         if posicaoXErro + larguraErro < posicaoXProgramador and passou == False:
             pontos = pontos + 1
             passou = True
-            velocidadeErro = velocidadeErro + 1
+
+            if pontos % 3 == 0:
+                velocidadeErro = velocidadeErro + 1
 
         tela.fill(azul)
 
         tela.blit(programador, (posicaoXProgramador, posicaoYProgramador))
 
-        erroCima = pygame.draw.rect(tela, verde, (posicaoXErro, 0, larguraErro, alturaErroCima))
-        erroBaixo = pygame.draw.rect(tela, verde, (posicaoXErro, alturaErroCima + espaco, larguraErro, 400))
+        pygame.draw.rect(tela, verde, (posicaoXErro, 0, larguraErro, alturaErroCima))
+        pygame.draw.rect(tela, verde, (posicaoXErro, alturaErroCima + espaco, larguraErro, 700))
 
         textoErroCima = fonteMenu.render("BUG", True, preto)
         tela.blit(textoErroCima, (posicaoXErro + 18, alturaErroCima - 35))
@@ -83,19 +146,23 @@ def jogar():
 
         pixelsErroX = list(range(posicaoXErro, posicaoXErro + larguraErro))
         pixelsErroCimaY = list(range(0, alturaErroCima))
-        pixelsErroBaixoY = list(range(alturaErroCima + espaco, 400))
+        pixelsErroBaixoY = list(range(alturaErroCima + espaco, 700))
 
         if len(list(set(pixelsProgramadorX).intersection(set(pixelsErroX)))) > 5:
             if len(list(set(pixelsProgramadorY).intersection(set(pixelsErroCimaY)))) > 5:
+                escreverDados(nome, pontos)
                 dead(pontos)
 
             if len(list(set(pixelsProgramadorY).intersection(set(pixelsErroBaixoY)))) > 5:
+                escreverDados(nome, pontos)
                 dead(pontos)
 
         if posicaoYProgramador < 0:
+            escreverDados(nome, pontos)
             dead(pontos)
 
-        if posicaoYProgramador > 320:
+        if posicaoYProgramador > 620:
+            escreverDados(nome, pontos)
             dead(pontos)
 
         pygame.display.update()
@@ -103,6 +170,8 @@ def jogar():
 
 
 def dead(pontos):
+    pygame.mixer.music.stop()
+
     larguraButtonStart = 190
     alturaButtonStart = 45
 
@@ -118,59 +187,22 @@ def dead(pontos):
 
             elif evento.type == pygame.MOUSEBUTTONUP:
                 if startButton.collidepoint(evento.pos):
-                    jogar()
+                    boas_vindas()
 
         tela.fill(preto)
 
         textoGameOver = fonteMenu.render("O bug quebrou o sistema!", True, branco)
-        tela.blit(textoGameOver, (260, 120))
+        tela.blit(textoGameOver, (340, 180))
 
         textoPontos = fonteMenu.render("Erros desviados: " + str(pontos), True, branco)
-        tela.blit(textoPontos, (300, 165))
+        tela.blit(textoPontos, (380, 230))
 
-        startButton = pygame.draw.rect(tela, branco, (305, 230, larguraButtonStart, alturaButtonStart), border_radius=15)
+        startButton = pygame.draw.rect(tela, branco, (390, 320, larguraButtonStart, alturaButtonStart), border_radius=15)
         startTexto = fonteMenu.render("Tentar novamente", True, preto)
-        tela.blit(startTexto, (320, 235))
+        tela.blit(startTexto, (405, 325))
 
         pygame.display.update()
         relogio.tick(60)
 
 
-def start():
-    larguraButtonStart = 150
-    alturaButtonStart = 40
-
-    while True:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                quit()
-
-            elif evento.type == pygame.MOUSEBUTTONDOWN:
-                if startButton.collidepoint(evento.pos):
-                    larguraButtonStart = 140
-                    alturaButtonStart = 35
-
-            elif evento.type == pygame.MOUSEBUTTONUP:
-                if startButton.collidepoint(evento.pos):
-                    jogar()
-
-        tela.fill(azul)
-
-        titulo = fonteMenu.render("FLAPPY PROGRAMADOR", True, preto)
-        tela.blit(titulo, (270, 110))
-
-        instrucao = fonteMenu.render("Ajude o programador a fugir dos bugs!", True, preto)
-        tela.blit(instrucao, (210, 155))
-
-        comando = fonteMenu.render("Use a seta para cima", True, preto)
-        tela.blit(comando, (295, 190))
-
-        startButton = pygame.draw.rect(tela, branco, (325, 250, larguraButtonStart, alturaButtonStart), border_radius=15)
-        startTexto = fonteMenu.render("Iniciar", True, preto)
-        tela.blit(startTexto, (365, 252))
-
-        pygame.display.update()
-        relogio.tick(60)
-
-
-start()
+boas_vindas()
