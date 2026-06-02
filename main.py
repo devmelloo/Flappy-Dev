@@ -23,6 +23,7 @@ branco = (255, 255, 255)
 preto = (0, 0, 0)
 verde = (0, 200, 0)
 azul = (90, 180, 255)
+cinza = (120, 120, 120)
 
 fonteMenu = pygame.font.SysFont("comicsans", 25)
 
@@ -37,7 +38,7 @@ fundo = pygame.transform.scale(fundo, (1000, 700))
 
 
 def boas_vindas():
-    nome_maior, maior_pontos, dataJogada = maior_pontuador()
+    nome_maior, maior_pontos, dataJogada, horaJogada = maior_pontuador()
 
     larguraButtonStart = 180
     alturaButtonStart = 45
@@ -74,8 +75,11 @@ def boas_vindas():
             recorde = fonteMenu.render("Melhor jogador: " + nome_maior + " - " + str(maior_pontos), True, preto)
             tela.blit(recorde, (310, 290))
 
-            data = fonteMenu.render("Data/Hora: " + str(dataJogada), True, preto)
+            data = fonteMenu.render("Data: " + str(dataJogada), True, preto)
             tela.blit(data, (370, 325))
+
+        hora = fonteMenu.render("Hora: " + str(horaJogada), True, preto)
+        tela.blit(hora, (370, 360))
 
         startButton = pygame.draw.rect(tela, branco, (400, 430, larguraButtonStart, alturaButtonStart), border_radius=15)
         startTexto = fonteMenu.render("Iniciar partida", True, preto)
@@ -112,7 +116,10 @@ def jogar():
 
     pontos = 0
     passou = False
-    pausado = False
+    pausado = True
+
+    tamanhoEngrenagem = 30
+    crescendoEngrenagem = True
 
     while True:
         for evento in pygame.event.get():
@@ -145,8 +152,13 @@ def jogar():
             movimentoYDecorativo = random.randint(-3, 3)
 
         if pausado == True:
-            textoPausa = fonteMenu.render("PAUSADO - Aperte SPACE para continuar", True, branco)
-            tela.blit(textoPausa, (300, 330))
+            tela.blit(fundo, (0,0))
+            tela.blit(decorativo, (posicaoXDecorativo, posicaoYDecorativo))
+            tela.blit(programador, (posicaoXProgramador, posicaoYProgramador))
+
+            textoPausa = fonteMenu.render("APERTE SPACE PARA CONTINUAR", True, branco)
+            tela.blit(textoPausa, (320, 330))
+
             pygame.display.update()
             relogio.tick(60)
             continue
@@ -168,7 +180,35 @@ def jogar():
             if pontos % 3 == 0:
                 velocidadeErro = velocidadeErro + 1
 
+        if crescendoEngrenagem == True:
+            tamanhoEngrenagem = tamanhoEngrenagem + 1
+        else:
+            tamanhoEngrenagem = tamanhoEngrenagem - 1
+
+        if tamanhoEngrenagem >= 45:
+            crescendoEngrenagem = False
+
+        if tamanhoEngrenagem <= 30:
+            crescendoEngrenagem = True
+
+
         tela.blit(fundo, (0,0))
+        
+        pygame.draw.rect(tela, cinza, (920, 20, 20, 20))
+        pygame.draw.rect(tela, cinza, (920, 100, 20, 20))
+
+        pygame.draw.rect(tela, cinza, (880, 60, 20, 20))
+        pygame.draw.rect(tela, cinza, (960, 60, 20, 20))
+
+        pygame.draw.rect(tela, cinza, (890, 30, 20, 20))
+        pygame.draw.rect(tela, cinza, (950, 30, 20, 20))
+
+        pygame.draw.rect(tela, cinza, (890, 90, 20, 20))
+        pygame.draw.rect(tela, cinza, (950, 90, 20, 20))
+
+        pygame.draw.circle(tela, cinza, (930, 70), tamanhoEngrenagem)
+        pygame.draw.circle(tela, preto, (930, 70), int(tamanhoEngrenagem / 2))
+
         tela.blit(decorativo, (posicaoXDecorativo, posicaoYDecorativo))
         tela.blit(programador, (posicaoXProgramador, posicaoYProgramador))
 
@@ -218,6 +258,8 @@ def jogar():
 def dead(pontos):
     pygame.mixer.music.stop()
 
+    nome_maior, maior_pontos, dataJogada, horaJogada = maior_pontuador()
+
     larguraButtonStart = 190
     alturaButtonStart = 45
 
@@ -243,9 +285,18 @@ def dead(pontos):
         textoPontos = fonteMenu.render("Erros desviados: " + str(pontos), True, branco)
         tela.blit(textoPontos, (380, 230))
 
-        startButton = pygame.draw.rect(tela, branco, (390, 320, larguraButtonStart, alturaButtonStart), border_radius=15)
+        recorde = fonteMenu.render("Melhor jogador: " + nome_maior + " - " + str(maior_pontos), True, branco)
+        tela.blit(recorde, (330, 270))
+
+        data = fonteMenu.render("Data: " + str(dataJogada), True, branco)
+        tela.blit(data, (390, 305))
+
+        hora = fonteMenu.render("Hora: " + str(horaJogada), True, branco)
+        tela.blit(hora, (390, 340))
+
+        startButton = pygame.draw.rect(tela, branco, (390, 400, larguraButtonStart, alturaButtonStart), border_radius=15)
         startTexto = fonteMenu.render("Tentar novamente", True, preto)
-        tela.blit(startTexto, (405, 325))
+        tela.blit(startTexto, (405, 405))
 
         pygame.display.update()
         relogio.tick(60)
