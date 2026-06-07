@@ -9,8 +9,8 @@ cx_Freeze.setup(
     name = "Flappy Dev",
     options={
         "build_exe":{
-            "packages":["pygame"],
-            "include_files":["bases","recursos"]
+            "packages":["pygame", "pyttsx3", "pyttsx3.drivers", "pyttsx3.drivers.sapi5", "comtypes"],
+            "include_files":["bases","recursos","log.dat"]
         }
     }, executables = executaveis
 )
