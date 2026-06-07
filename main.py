@@ -1,7 +1,7 @@
 import pygame
 import random
 import pyttsx3
-from recursos.funcoes import inicializarBancoDeDados, escreverDados, maior_pontuador
+from recursos.trabalho import inicializarBancoDeDados, escreverDados, maior_pontuador
 
 pygame.init()
 pygame.mixer.music.load("bases/soundtrack.mp3")
