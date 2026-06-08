@@ -2,7 +2,7 @@ import cx_Freeze
 executaveis = [ 
                cx_Freeze.Executable(
                    script="main.py", 
-                   icon="bases/icon.png",
+                   icon="bases/icon.ico",
                     target_name="Flappy Dev.exe"
                    ) ]
 cx_Freeze.setup(

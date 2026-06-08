@@ -16,9 +16,13 @@ while True:
         print("Nome Inválido!")
 
 tamanho = (1000, 700)
+
 pygame.display.set_caption("Flappy Dev")
 relogio = pygame.time.Clock()
 tela = pygame.display.set_mode(tamanho)
+
+icone = pygame.image.load("bases/icon.png")
+pygame.display.set_icon(icone)
 
 branco = (255, 255, 255)
 preto = (0, 0, 0)
